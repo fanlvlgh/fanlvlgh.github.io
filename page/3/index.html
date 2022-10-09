@@ -1,0 +1,325 @@
+<!DOCTYPE html><html class="appearance-auto" lang="zh-CN"><head><meta charset="UTF-8"><title>Ryo's blog</title><meta name="description" content="行万里路，读万卷书"><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><script>var _hmt = _hmt || [];
+(function() {
+var hm = document.createElement("script");
+hm.src = "https://hm.baidu.com/hm.js?" + '2c076421eb9f21a0a143f8ee9c4ab171';
+var s = document.getElementsByTagName("script")[0];
+s.parentNode.insertBefore(hm, s);
+})();</script><!-- End Baidu Analytics --><meta name="referrer" content="no-referrer"><link rel="icon" href="/null"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/widget-post-list.css"><meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">Ryo's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/about">关于</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/about">关于</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><article class="post-container is-flex is-justify-content-center section container is-max-widescreen pt-4 px-2"><div class="columns is-variable is-1-tablet is-3-desktop-only is-2-widescreen is-full-width"><section class="column"><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="https://upload-images.jianshu.io/upload_images/12321605-0feac2eb12658cfb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/2020/06/09/golang-memory-model/"><img class="post-cover-img js-img-fadeIn" src="https://upload-images.jianshu.io/upload_images/12321605-0feac2eb12658cfb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Golang"><i class="tag post-item-tag">Golang</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2020/06/09/golang-memory-model/">Golang Memory Model</a></h2><time class="has-text-grey" datetime="2020-06-08T17:32:00.000Z">2020-06-09</time><p class="is-flex-grow-2 mt-2">
+
+一、背景1.1 一个 Code Review 引发的思考一个同学在 Golang 项目里面用 Double Check（不清楚的同学可以去百度搜下，Java中比较常见）的方式实现了一个单例。具体实现如下：
+var (
+    lock     sync.Mutex
+    instance *UserInfo
+)
+
+func getInstance() (*UserInfo, error) {
+    if instance == nil {
+        //---Lock
+        lock.Lock()
+        defer lock.Unlock()
+        if instance == nil {
+            instance = &amp;amp;UserInfo{..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2020/06/09/golang-memory-model/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Golang"><i class="tag post-item-tag">Golang</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2020/06/06/golang-rmmutex/">Golang RWMutext 代码走读</a></h2><time class="has-text-grey" datetime="2020-06-06T14:20:56.000Z">2020-06-06</time><p class="is-flex-grow-2 mt-2">type RWMutex struct {
+   w           Mutex  // held if there are pending writers
+   writerSem   uint32 // 写的信号量
+   readerSem   uint32 // 读的信号量
+   readerCount int32  // 等待写的个数
+   readerWait  int32  // 等待读的个数
+}
+
+
+// 加“读锁”
+// 对readerCount + 1 。
+// 然后看 readerCount是不是小于0
+// 小于0表示 正在加写锁，然后阻塞到rw.readerSem 这个信号上。
+func (rw *RWMutex) RLock() {
+   if atomic.AddInt32(..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2020/06/06/golang-rmmutex/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Middleware"><i class="tag post-item-tag">Middleware</i></a><a href="/tags/Note"><i class="tag post-item-tag">Note</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2020/05/10/k8s-study/">K8S学习笔记</a></h2><time class="has-text-grey" datetime="2020-05-10T03:00:00.000Z">2020-05-10</time><p class="is-flex-grow-2 mt-2">环境配置Docker File 编写#源镜像
+FROM golang:latest
+# 容器环境变量添加，会覆盖默认的变量值
+ENV GOPROXY=https://goproxy.cn,direct
+ENV GO111MODULE=&quot;on&quot;
+ENV test=&quot;on&quot;
+
+# 作者
+LABEL author=&quot;fanlv&quot;
+LABEL email=&quot;fanlvlgh@gmail.com&quot;
+#设置工作目录
+WORKDIR /go/src/gitee.com/fanlv/GolangDemo/GoTest/docker
+# 复制仓库源文件到容器里
+COPY . .
+
+# 编译可执行二进制文件(一定要写这些编译参数，指定了可执行程序的运行平台,参考：https://www.jianshu.com/p/4b345a..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2020/05/10/k8s-study/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Sort"><i class="tag post-item-tag">Sort</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2020/01/16/sort/">常用的排序算法</a></h2><time class="has-text-grey" datetime="2020-01-16T10:45:00.000Z">2020-01-16</time><p class="is-flex-grow-2 mt-2">插入排序func insertSort(nums []int) {
+    for i := 1; i &amp;lt; len(nums); i++ {
+        tmp := nums[i]
+        for j := i; j &amp;gt;= 0; j-- {
+            if j &amp;gt; 0 &amp;amp;&amp;amp; tmp &amp;lt; nums[j-1] {
+                nums[j] = nums[j-1]
+            } else {
+                nums[j] = tmp
+                break
+            }
+        }
+    }
+}
+
+折半插入排序func binaryInsertSor..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2020/01/16/sort/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Middleware"><i class="tag post-item-tag">Middleware</i></a><a href="/tags/Redis"><i class="tag post-item-tag">Redis</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2019/08/17/redis-ha/">Redis 高可用解决方案总结</a></h2><time class="has-text-grey" datetime="2019-08-17T13:06:17.000Z">2019-08-17</time><p class="is-flex-grow-2 mt-2">一、主从复制什么是主从复制我们正常在项目中对redis进行应用，一般都不会是单点的。因为，单点的宕机即不可用，不能保证可用性。另外，单点redis读写指令都会打到同一个服务里面，也会影响性能。在通常的应用中，对redis的读操作远远多于写操作，所以，我们一般会选择“一主多从”的集群策略。
+
+
+主中的数据有两个副本（replication）即从redis1和从redis2，即使一台服务器宕机其它两台服务也可以继续提供服务。
+主中的数据和从上的数据保持实时同步，当主写入数据时通过主从复制机制会复制到两个从服务上。
+只有一个主redis，可以有多个从 redis。
+主从复制不会阻塞master，在同步数据时，master可以继续处理client请求。
+
+一个可以即是主又是从，如下图：
+
+主从复制过程一般当slav..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2019/08/17/redis-ha/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Middleware"><i class="tag post-item-tag">Middleware</i></a><a href="/tags/Redis"><i class="tag post-item-tag">Redis</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2019/08/17/reids-source-code-7/">Redis 源码分析(七) ：skiplist</a></h2><time class="has-text-grey" datetime="2019-08-16T16:44:40.000Z">2019-08-17</time><p class="is-flex-grow-2 mt-2">一、skiplist由来skiplist本质上也是一种查找结构，用于解决算法中的查找问题（Searching），即根据给定的key，快速查到它所在的位置（或者对应的value）。
+我们在《Redis内部数据结构详解》系列的第一篇中介绍dict的时候，曾经讨论过：一般查找问题的解法分为两个大类：一个是基于各种平衡树，一个是基于哈希表。但skiplist却比较特殊，它没法归属到这两大类里面。
+这种数据结构是由William Pugh发明的，最早出现于他在1990年发表的论文《Skip Lists: A Probabilistic Alternative to Balanced Trees》。对细节感兴趣的同学可以下载论文原文来阅读。
+skiplist，顾名思义，首先它是一个list。实际上，它是在有序链表的基础..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2019/08/17/reids-source-code-7/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Middleware"><i class="tag post-item-tag">Middleware</i></a><a href="/tags/Redis"><i class="tag post-item-tag">Redis</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2019/08/12/reids-source-code-6/">Redis 源码分析(六) ：quciklist</a></h2><time class="has-text-grey" datetime="2019-08-11T16:10:29.000Z">2019-08-12</time><p class="is-flex-grow-2 mt-2">一、什么是quicklist由于考虑到链表adlist的附加空间相对太高，prev和next指针就要占去 16 个字节 (64bit系统的指针是8个字节)，另外每个节点的内存都是单独分配，会加剧内存的碎片化，影响内存管理效率。
+quicklist是一个3.2版本之后新增的基础数据结构，是redis自定义的一种复杂数据结构，将ziplist和adlist结合到了一个数据结构中。主要是作为list的基础数据结构。在3.2之前，list是根据元素数量的多少采用ziplist或者adlist作为基础数据结构，3.2之后统一改用quicklist，从数据结构的角度来说quicklist结合了两种数据结构的优缺点，复杂但是实用：
+
+链表在插入，删除节点的时间复杂度很低；但是内存利用率低，且由于内存不连续容易产生内存碎片..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2019/08/12/reids-source-code-6/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Middleware"><i class="tag post-item-tag">Middleware</i></a><a href="/tags/Redis"><i class="tag post-item-tag">Redis</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2019/08/10/reids-source-code-5/">Redis 源码分析(五) ：ziplist</a></h2><time class="has-text-grey" datetime="2019-08-10T12:50:06.000Z">2019-08-10</time><p class="is-flex-grow-2 mt-2">一、前言ziplist是redis节省内存的典型例子之一，这个数据结构通过特殊的编码方式将数据存储在连续的内存中。在3.2之前是list的基础数据结构之一，在3.2之后被quicklist替代。但是仍然是zset底层实现之一。
+二、存储结构压缩表没有数据结构代码定义，完全是通过内存的特殊编码方式实现的一种紧凑存储数据结构。我们可以通过ziplist的初始化函数和操作api来倒推其内存分布。
+#define ZIP_END 255
+
+#define ZIPLIST_BYTES(zl)       (*((uint32_t*)(zl)))    // 获取ziplist的bytes指针
+#define ZIPLIST_TAIL_OFFSET(zl) (*((uint32_t*)((zl)+sizeof(uint..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2019/08/10/reids-source-code-5/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Middleware"><i class="tag post-item-tag">Middleware</i></a><a href="/tags/Redis"><i class="tag post-item-tag">Redis</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2019/08/10/reids-source-code-4/">Redis 源码分析(四) ：intset</a></h2><time class="has-text-grey" datetime="2019-08-10T08:56:15.000Z">2019-08-10</time><p class="is-flex-grow-2 mt-2">一、什么是intsetintset是Redis内存数据结构之一，用来实现Redis的Set结构（当集合元素不大于设定值并且元素都是整数时，就会用intset作为set的底层数据结构），它的特点有：
+
+元素类型只能为数字。
+元素有三种类型：int16_t、int32_t、int64_t。
+元素有序，不可重复。
+intset和sds一样，内存连续，就像数组一样。
+
+二、数据结构定义typedef struct intset {
+    uint32_t encoding;  // 编码类型 int16_t、int32_t、int64_t
+    uint32_t length;    // 长度 最大长度:2^32
+    int8_t contents[];  // 柔性数组
+} intset;
+
+
+enco..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2019/08/10/reids-source-code-4/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Middleware"><i class="tag post-item-tag">Middleware</i></a><a href="/tags/Redis"><i class="tag post-item-tag">Redis</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2019/08/09/reids-source-code-3/">Redis 源码分析(三) ：dict</a></h2><time class="has-text-grey" datetime="2019-08-09T02:58:25.000Z">2019-08-09</time><p class="is-flex-grow-2 mt-2">一、什么是dictdict (dictionary 字典)，通常的存储结构是Key-Value形式的，通过Hash函数对key求Hash值来确定Value的位置，因此也叫Hash表，是一种用来解决算法中查找问题的数据结构，默认的算法复杂度接近O(1)，Redis本身也叫Remote Dictionary Server(远程字典服务器)，其实也就是一个大字典，它的key通常来说是String类型的，但是Value可以是String、Set、ZSet、Hash、List等不同的类型，下面我们看下dict的数据结构定义。
+二、Redis Dict数据结构
+从上图可以看出与dict相关的关键数据结构有三个，分别是：
+
+dict是Redis中的字典结构，包含两个dictht。
+dictht表示一个Hash表。
+dic..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2019/08/09/reids-source-code-3/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Middleware"><i class="tag post-item-tag">Middleware</i></a><a href="/tags/Redis"><i class="tag post-item-tag">Redis</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2019/06/14/reids-source-code-2/">Redis 源码分析(二) ：ADList</a></h2><time class="has-text-grey" datetime="2019-06-14T06:58:00.000Z">2019-06-14</time><p class="is-flex-grow-2 mt-2">概述ADList(A generic doubly linked list)是 redis 自定义的一种双向链表，广泛运用于 redisClients 、 redisServer 、发布订阅、慢查询、监视器等。（注：3.0及以前还会被运用于list结构中，在3.2以后被quicklist取代）。
+
+链表提供了高效的节点重排能力，以及顺序性的节点访问方式，并且可以通过增删节点来灵活地调整链表的长度。
+链表在Redis 中的应用非常广泛，比如列表键的底层实现之一就是链表。当一个列表键包含了数量较多的元素，又或者列表中包含的元素都是比较长的字符串时，Redis 就会使用链表作为列表键的底层实现。
+链表结构是 Redis 中一个常用的结构，它可以存储多个字符串
+它是有序的
+能够存储2的32次方减一个节点（超过 40..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2019/06/14/reids-source-code-2/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Middleware"><i class="tag post-item-tag">Middleware</i></a><a href="/tags/Redis"><i class="tag post-item-tag">Redis</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2019/06/14/reids-source-code-1/">Redis 源码分析(一) ：sds</a></h2><time class="has-text-grey" datetime="2019-06-14T03:22:24.000Z">2019-06-14</time><p class="is-flex-grow-2 mt-2">什么是sds字符串是Redis中最为常见的数据存储类型，其底层实现是简单动态字符串sds(simple dynamic string)，是可以修改的字符串。
+它类似于Java中的ArrayList，它采用预分配冗余空间的方式来减少内存的频繁分配。
+数据结构// 3.0及以前
+struct sdshdr {
+    // 记录buf数组中已使用字节数量
+    unsigned int len;
+    // 记录buf数组中未使用的字节数量
+    unsigned int free;
+    // 字节数组，存储字符串
+    char buf[];
+};
+
+// &amp;gt;=3.2
+struct __attribute__ ((__packed__)) sdshdr5 {
+    unsigned cha..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2019/06/14/reids-source-code-1/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Middleware"><i class="tag post-item-tag">Middleware</i></a><a href="/tags/MySQL"><i class="tag post-item-tag">MySQL</i></a><a href="/tags/Backend"><i class="tag post-item-tag">Backend</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2019/04/04/mysql-index/">MySQL 索引那些事</a></h2><time class="has-text-grey" datetime="2019-04-04T11:56:08.000Z">2019-04-04</time><p class="is-flex-grow-2 mt-2">1. MySQL 常见几种索引类型1.1 普通索引，是最基本的索引，它没有任何限制。它有以下几种创建方式：
+（1）直接创建索引
+
+    CREATE INDEX index_name ON table(column(length))
+
+（2）修改表结构的方式添加索引
+
+    ALTER TABLE table_name ADD INDEX index_name ON (column(length))
+
+（3）创建表的时候同时创建索引
+
+    CREATE TABLE `table` (
+        `id` int(11) NOT NULL AUTO_INCREMENT ,
+        `title` char(255) CHARACTER NOT NULL ,
+        `conten..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2019/04/04/mysql-index/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Linux"><i class="tag post-item-tag">Linux</i></a><a href="/tags/Memory"><i class="tag post-item-tag">Memory</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/11/08/memory-page-and-addressing/">内存管理、寻址方式那些事</a></h2><time class="has-text-grey" datetime="2018-11-08T06:05:56.000Z">2018-11-08</time><p class="is-flex-grow-2 mt-2">一、内存1.1 什么是内存　　简单地说，内存就是一个数据货架。内存有一个最小的存储单位，大多数都是一个字节。内存用内存地址（memory address）来为每个字节的数据顺序编号。因此，内存地址说明了数据在内存中的位置。内存地址从0开始，每次增加1。这种线性增加的存储器地址称为线性地址（linear address）。
+　　内存地址的编号有上限。地址空间的范围和地址总线（address bus）的位数直接相关。CPU通过地址总线来向内存说明想要存取数据的地址。以英特尔32位的80386型CPU为例，这款CPU有32个针脚可以传输地址信息。每个针脚对应了一位。如果针脚上是高电压，那么这一位是1。如果是低电压，那么这一位是0。32位的电压高低信息通过地址总线传到内存的32个针脚，内存就能把电压高低信息转换成3..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/11/08/memory-page-and-addressing/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/DataStructure"><i class="tag post-item-tag">DataStructure</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/11/06/b-tree/">B-Tree、B+Tree、B*Tree</a></h2><time class="has-text-grey" datetime="2018-11-06T10:18:53.000Z">2018-11-06</time><p class="is-flex-grow-2 mt-2">一、B-Tree1.1 什么是B-Tree 1970年，R.Bayer和E.mccreight提出了一种适用于外查找的树，它是一种平衡的多叉树，称为B树，其定义如下
+
+根结点至少有两个子女。
+
+每个中间节点都包含k-1个元素和k个孩子，其中 m/2 &amp;lt;= k &amp;lt;= m
+
+每一个叶子节点都包含k-1个元素，其中 m/2 &amp;lt;= k &amp;lt;= m
+
+所有的叶子结点都位于同一层。
+
+每个节点中的元素从小到大排列，节点当中k-1个元素正好是k个孩子包含的元素的值域分划。
+
+
+M = 3
+
+1.2 B-Tree 查找假设我们要查找的数据是 5
+
+二、B+Tree2.1 什么是B+TreeB+ 树是一种树数据结构，是一个n叉树，每个节点通常有多个孩子，一棵B+树包含根节点、内部节点和叶子节点。根节点可..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/11/06/b-tree/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Middleware"><i class="tag post-item-tag">Middleware</i></a><a href="/tags/MySQL"><i class="tag post-item-tag">MySQL</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/10/26/mysql-engine/">MyISAM和InnoDB区别和应用场景</a></h2><time class="has-text-grey" datetime="2018-10-26T08:36:00.000Z">2018-10-26</time><p class="is-flex-grow-2 mt-2">什么是MyISAM 和InnoDB
+MyISAM是MySQL的默认数据库引擎（5.5版之前），由早期的ISAM所改良。虽然性能极佳，但却有一个缺点：不支持事务处理（transaction）。
+InnoDB，是MySQL的数据库引擎之一，为MySQL AB发行binary的标准之一。InnoDB由Innobase Oy公司所开发，2006年五月时由甲骨文公司并购。与传统的ISAM与MyISAM相比，InnoDB的最大特色就是支持了ACID兼容的事务（Transaction）功能，类似于PostgreSQL。
+
+MyISAM：它是基于传统的ISAM类型，ISAM是Indexed Sequential Access Method (有索引的顺序访问方法) 的缩写，它是存储记录和文件的标准方法。不是事务安全的，而且..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/10/26/mysql-engine/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Golang"><i class="tag post-item-tag">Golang</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/10/16/data-struct-alignment/">Golang 内存对齐问题</a></h2><time class="has-text-grey" datetime="2018-10-16T12:52:07.000Z">2018-10-16</time><p class="is-flex-grow-2 mt-2">什么是内存对齐？CPU把内存当成是一块一块的，块的大小可以是2，4，8，16字节大小，因此CPU在读取内存时是一块一块进行读取的。块大小成为memory access granularity（粒度）。
+
+假设CPU访问粒度是4，也就是一次性可以读取内存中的四个字节内容；当我们不采用内存对齐策略，如果需要访问A中的b元素，CPU需要先取出0-3四个字节的内容，发现没有读取完，还需要再次读取，一共需要进行两次访问内存的操作；而有了内存对齐，参考左图，可一次性取出4-7四个字节的元素也即是b，这样就只需要进行一次访问内存的操作。所以操作系统这样做的原因也就是所谓的拿空间换时间，提高效率。
+为什么要内存对齐？会了关于结构体内存大小的计算，可是为什么系统要对于结构体数据进行内存对齐呢，很明显所占用的空间大小要更多。原..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/10/16/data-struct-alignment/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Note"><i class="tag post-item-tag">Note</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2020/08/25/note/happy-talk-net/">《趣谈网络协议》</a></h2><time class="has-text-grey" datetime="2020-08-25T02:00:00.000Z">2020-08-25</time><p class="is-flex-grow-2 mt-2">通信协议综述IP &amp;amp;&amp;amp; MACIP 地址是一个网卡在网络世界的通讯地址，相当于我们现实世界的门牌号码。既然是门牌号码，不能大家都一样，不然就会起冲突。比方说，假如大家都叫六单元 1001 号，那快递就找不到地方了。所以，有时候咱们的电脑弹出网络地址冲突，出现上不去网的情况，多半是 IP 地址冲突了。
+
+下面这个表格，详细地展示了 A、B、C 三类地址所能包含的主机的数量。在后文中，我也会多次借助这个表格来讲解。
+
+无类型域间选路（CIDR）
+于是有了一个折中的方式叫作无类型域间选路，简称 CIDR。这种方式打破了原来设计的几类地址的做法，将 32 位的 IP 地址一分为二，前面是网络号，后面是主机号。从哪里分呢？你如果注意观察的话可以看到，10.100.122.2/24，这个 IP 地址中有..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2020/08/25/note/happy-talk-net/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Note"><i class="tag post-item-tag">Note</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2020/07/16/note/computer-organization/">《深入浅出计算机组成原理》</a></h2><time class="has-text-grey" datetime="2020-07-16T02:00:00.000Z">2020-07-16</time><p class="is-flex-grow-2 mt-2">基础篇计算机的基本硬件组成
+第一，广。组成原理中的概念非常多，每个概念的信息量也非常大。比如想要理解 CPU 中的算术逻辑单元（也就是 ALU）是怎么实现加法的，需要牵涉到如何把整数表示成二进制，还需要了解这些表示背后的电路、逻辑门、CPU 时钟、触发器等知识。
+第二，深。组成原理中的很多概念，阐述开来就是计算机学科的另外一门核心课程。比如，计算机的指令是怎么从你写的 C、Java 这样的高级语言，变成计算机可以执行的机器码的？如果我们展开并深入讲解这个问题，就会变成《编译原理》这样一门核心课程。
+第三，学不能致用。学东西是要拿来用的，但因为这门课本身的属性，很多人在学习时，常常沉溺于概念和理论中，无法和自己日常的开发工作联系起来，以此来解决工作中遇到的问题，所以，学习往往没有成就感，就很难有动力坚持下去。..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2020/07/16/note/computer-organization/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Middleware"><i class="tag post-item-tag">Middleware</i></a><a href="/tags/Note"><i class="tag post-item-tag">Note</i></a><a href="/tags/MySQL"><i class="tag post-item-tag">MySQL</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2019/08/01/note/mysql-45-lesson/">《MySQL实战45讲》</a></h2><time class="has-text-grey" datetime="2019-08-01T11:56:08.000Z">2019-08-01</time><p class="is-flex-grow-2 mt-2">binlog &amp;amp;&amp;amp; redo log什么是 binlog
+binlog 是逻辑日志，记录的是这个语句的原始逻辑/变化，比如“给 ID=2 这一行的 c 字段加 1 ”。 
+binlog 是追加写，不会覆盖之前的数据，可以提供完整的数据归档的能力。
+
+什么是 redo log
+redo log 是物理日志，记录的是“在某个数据页上做了什么修改”；
+redo log 提供 crash-safe 能力。
+一般只有4G ，4个文件，循环复写。
+
+binlog 和 redo log 不同点因为最开始 MySQL 里并没有 InnoDB 引擎。MySQL 自带的引擎是 MyISAM，但是 MyISAM 没有 crash-safe 的能力，binlog 日志只能用于归档。而 InnoDB 是另一个公司以插..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2019/08/01/note/mysql-45-lesson/">更多</a></section></article><section class="paginator is-flex is-justify-content-flex-end is-flex-wrap-wrap mt-5"><a class="extend prev" rel="prev" href="/page/2/"><i class="iconfont icon-prev has-text-grey"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/"><i class="iconfont icon-next has-text-grey"></i></a></section></section><aside class="column is-hidden-mobile is-4-tablet is-3-widescreen"><style>.search-widget .search-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--second-text-color);
+}
+.search-widget .search-content {
+    position: absolute;
+    left: 0;
+    top: calc(100% - 3px);
+    z-index: 2;
+
+    width: 100%;
+    height: 0;
+    max-height: 550px;
+
+    overflow: auto;
+    box-sizing: border-box;
+
+    background: var(--top-bar-bg-color);
+    backdrop-filter: blur(var(--backdropFilter));
+    -webkit-backdrop-filter: blur(var(--backdropFilter));
+
+    border-bottom-left-radius: var(--borderRadius);
+    border-bottom-right-radius: var(--borderRadius);
+    box-shadow: 0 12px 15px rgba(0, 0, 0, 0.08);
+}
+
+.search-widget .search-content a:hover h5 {
+    color: #3273dc!important;
+}
+</style><main class="aside-card-container search-widget is-relative"><label for="searchInput"><div class="is-flex px-4" id="searchButton"><i class="iconfont icon--search1 mr-1"></i><input class="search-input is-flex-grow-1" id="searchInput" placeholder="搜索内容.."></div></label><section class="search-content content" id="searchContent"></section></main><script>var searchDatabase = []
+var searchInputEl = document.getElementById('searchInput')
+var searchButtonEl = document.getElementById('searchButton')
+var searchResultEl = document.getElementById('searchContent')
+
+searchInputEl.oninput = function (evt) {
+    var searchValue = evt.srcElement.value
+    var haveSearchValue = Boolean(searchValue.trim())
+    if (!haveSearchValue) {
+        searchResultEl.style.height = 0
+        searchResultEl.innerHTML = null
+        return
+    }
+
+    var searchResults = searching(searchValue)
+
+    if (searchResults.length > 0) {
+        renderSearchResults(searchResults)
+    }
+}
+
+function renderSearchResults(results) {
+    searchResultEl.innerHTML = null
+    var fragment = document.createDocumentFragment()
+
+    results.forEach(function (item) {
+        var link = document.createElement('a')
+        var title = document.createElement('h5')
+        var content = document.createElement('p')
+
+        title.className = 'mb-1'
+        title.innerText = item.title
+        content.innerText = item.content
+
+        link.href = item.link
+        link.appendChild(title)
+        link.appendChild(content)
+        link.className = 'p-4 is-block'
+
+        fragment.appendChild(link)
+    })
+
+    searchResultEl.appendChild(fragment)
+    searchResultEl.style.height = 'auto'
+}
+
+function searching(inputText) {
+    var inputTexts = inputText.split(' ')
+    var searchResults = []
+    inputTexts.forEach(function (searchKey) {
+        var haveSearchValue = Boolean(searchKey.trim())
+        if (!haveSearchValue) return
+
+        var key = searchKey.toLowerCase()
+
+        for (var entry of searchDatabase) {
+            var title = entry.getElementsByTagName('title')[0].textContent
+            var link = entry.getElementsByTagName('link')[0].getAttribute('href')
+            var contentWithTags = entry.getElementsByTagName('content')[0].textContent
+            var rawContent = contentWithTags.trim().replace(/<[^>]+>/g, '').toLowerCase()
+
+            var LENGTH = 80
+            var finalContent = ''
+            var contentLength = rawContent.length
+            var searchResultIdx = rawContent.indexOf(key)
+
+            var startIdx = searchResultIdx - 20,
+                endIdx = startIdx + LENGTH
+
+            if (startIdx < 0) {
+                startIdx = 0
+                endIdx = 100
+            }
+
+            endIdx > contentLength && (endIdx = contentLength)
+
+            finalContent = rawContent.substring(startIdx, endIdx)
+
+            if (title.indexOf(key) > -1 || searchResultIdx > -1) {
+                searchResults.push({
+                    link: link,
+                    title: title,
+                    content: finalContent
+                })
+            }
+        }
+    })
+    return searchResults
+}
+
+searchButtonEl.onclick = function () {
+    if (searchDatabase.length > 0) return;
+
+    fetch(window.location.href + '/search.xml').then(res => res.text()).then(res => {
+        var domparser = new DOMParser
+        var doc = domparser.parseFromString(res, 'application/xml')
+        searchDatabase = doc.getElementsByTagName('search')[0].children
+    })
+}</script><main class="aside-card-container profile-widget"><!-- todo: 使用取色工具动态阴影--><section class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center"><section class="is-flex is-justify-content-center avatar is-clipped skeleton"><!-- debug images "https://api.ixiaowai.cn/gqapi/gqapi.php"--><img class="js-img-fadeIn" src="https://upload-images.jianshu.io/upload_images/12321605-8743f44f528a9c79.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="user avatar"></section><h3 class="user-name">Ryo</h3><blockquote class="has-text-centered is-relative"><span style="margin-bottom: 5px;">行万里路，读万卷书</span></blockquote><address class="has-text-centered has-text-grey"><i class="iconfont icon-location" style="margin-right: 5px;"></i><span class="has-text-grey">China</span></address></section><section class="sns-container is-flex is-justify-content-center is-align-items-center"><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/fanlv"><i class="iconfont icon-github"></i></a><!-- Ins--><a title="instagram" target="_blank" rel="noopener nofollow" href="//www.instagram.com/fanlvlgh"><i class="iconfont icon-ins"></i></a><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section></main><main class="aside-card-container recent-widget"><h3>最近</h3><ul><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=《趣" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/2020/08/25/note/happy-talk-net/">《趣谈网络协议》</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2020-08-25T02:00:00.000Z">2020-08-25</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=《深" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/2020/07/16/note/computer-organization/">《深入浅出计算机组成原理》</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2020-07-16T02:00:00.000Z">2020-07-16</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://upload-images.jianshu.io/upload_images/12321605-0feac2eb12658cfb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/2020/06/09/golang-memory-model/">Golang Memory Model</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2020-06-08T17:32:00.000Z">2020-06-09</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=Go" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/2020/06/06/golang-rmmutex/">Golang RWMutext 代码走读</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2020-06-06T14:20:56.000Z">2020-06-06</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=K8" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/2020/05/10/k8s-study/">K8S学习笔记</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2020-05-10T03:00:00.000Z">2020-05-10</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=常用" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/2020/01/16/sort/">常用的排序算法</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2020-01-16T10:45:00.000Z">2020-01-16</time></section></li></ul></main><main class="aside-card-container categories-widget category-page"><h3>分类</h3><section><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Architecture/">Architecture</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Arithmetic/">Arithmetic</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Backend/">Backend</a><span class="category-list-count">39</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Frontend/">Frontend</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Literature/">Literature</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Maths/">Maths</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MySQL/">MySQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Net/">Net</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/System/">System</a><span class="category-list-count">9</span></li></ul></section></main><main class="aside-card-container archives-widget"><h3>归档</h3><section><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/08/">八月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/06/">六月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">十二月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">二月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">7</span></li></ul></section></main><main class="aside-card-container tag-widget"><h3>标签</h3><section><a href="/tags/DataStructure"><span class="tag post-item-tag" style="margin-bottom: 5px;">DataStructure</span></a><a href="/tags/Calculus"><span class="tag post-item-tag" style="margin-bottom: 5px;">Calculus</span></a><a href="/tags/Golang"><span class="tag post-item-tag" style="margin-bottom: 5px;">Golang</span></a><a href="/tags/HTTP"><span class="tag post-item-tag" style="margin-bottom: 5px;">HTTP</span></a><a href="/tags/Middleware"><span class="tag post-item-tag" style="margin-bottom: 5px;">Middleware</span></a><a href="/tags/Envoy"><span class="tag post-item-tag" style="margin-bottom: 5px;">Envoy</span></a><a href="/tags/Lua"><span class="tag post-item-tag" style="margin-bottom: 5px;">Lua</span></a><a href="/tags/iOS"><span class="tag post-item-tag" style="margin-bottom: 5px;">iOS</span></a><a href="/tags/GRPC"><span class="tag post-item-tag" style="margin-bottom: 5px;">GRPC</span></a><a href="/tags/Note"><span class="tag post-item-tag" style="margin-bottom: 5px;">Note</span></a><a href="/tags/LinearAlgebra"><span class="tag post-item-tag" style="margin-bottom: 5px;">LinearAlgebra</span></a><a href="/tags/MySQL"><span class="tag post-item-tag" style="margin-bottom: 5px;">MySQL</span></a><a href="/tags/Probability"><span class="tag post-item-tag" style="margin-bottom: 5px;">Probability</span></a><a href="/tags/Protobuf"><span class="tag post-item-tag" style="margin-bottom: 5px;">Protobuf</span></a><a href="/tags/Net"><span class="tag post-item-tag" style="margin-bottom: 5px;">Net</span></a><a href="/tags/HTPP"><span class="tag post-item-tag" style="margin-bottom: 5px;">HTPP</span></a><a href="/tags/Distribution"><span class="tag post-item-tag" style="margin-bottom: 5px;">Distribution</span></a><a href="/tags/Redis"><span class="tag post-item-tag" style="margin-bottom: 5px;">Redis</span></a><a href="/tags/IO"><span class="tag post-item-tag" style="margin-bottom: 5px;">IO</span></a><a href="/tags/Consul"><span class="tag post-item-tag" style="margin-bottom: 5px;">Consul</span></a><a href="/tags/Sort"><span class="tag post-item-tag" style="margin-bottom: 5px;">Sort</span></a><a href="/tags/Statistics"><span class="tag post-item-tag" style="margin-bottom: 5px;">Statistics</span></a><a href="/tags/Linux"><span class="tag post-item-tag" style="margin-bottom: 5px;">Linux</span></a><a href="/tags/eng-practices"><span class="tag post-item-tag" style="margin-bottom: 5px;">eng-practices</span></a><a href="/tags/Memory"><span class="tag post-item-tag" style="margin-bottom: 5px;">Memory</span></a><a href="/tags/Backend"><span class="tag post-item-tag" style="margin-bottom: 5px;">Backend</span></a><a href="/tags/GoSourceCode"><span class="tag post-item-tag" style="margin-bottom: 5px;">GoSourceCode</span></a><a href="/tags/Architecture"><span class="tag post-item-tag" style="margin-bottom: 5px;">Architecture</span></a><a href="/tags/ETCD"><span class="tag post-item-tag" style="margin-bottom: 5px;">ETCD</span></a><a href="/tags/Chip"><span class="tag post-item-tag" style="margin-bottom: 5px;">Chip</span></a></section></main></aside></div></article><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/fanlv"><i class="iconfont icon-github"></i></a><!-- Ins--><a title="instagram" target="_blank" rel="noopener nofollow" href="//www.instagram.com/fanlvlgh"><i class="iconfont icon-ins"></i></a><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> Ryo 2022</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span>博学之，审问之，慎思之，明辨之，笃行之</span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></body></html>

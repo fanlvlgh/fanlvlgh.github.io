@@ -1,0 +1,304 @@
+<!DOCTYPE html><html class="appearance-auto" lang="zh-CN"><head><meta charset="UTF-8"><title>Ryo's blog</title><meta name="description" content="行万里路，读万卷书"><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><script>var _hmt = _hmt || [];
+(function() {
+var hm = document.createElement("script");
+hm.src = "https://hm.baidu.com/hm.js?" + '2c076421eb9f21a0a143f8ee9c4ab171';
+var s = document.getElementsByTagName("script")[0];
+s.parentNode.insertBefore(hm, s);
+})();</script><!-- End Baidu Analytics --><meta name="referrer" content="no-referrer"><link rel="icon" href="/null"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/widget-post-list.css"><meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">Ryo's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/about">关于</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/about">关于</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><article class="post-container is-flex is-justify-content-center section container is-max-widescreen pt-4 px-2"><div class="columns is-variable is-1-tablet is-3-desktop-only is-2-widescreen is-full-width"><section class="column"><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Middleware"><i class="tag post-item-tag">Middleware</i></a><a href="/tags/Consul"><i class="tag post-item-tag">Consul</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/10/12/service-discovery-consul/">服务发现之Consul</a></h2><time class="has-text-grey" datetime="2018-10-12T07:18:18.000Z">2018-10-12</time><p class="is-flex-grow-2 mt-2">consul是一个可以提供服务发现，健康检查，多数据中心，Key/Value存储等功能的分布式服务框架
+用于实现分布式系统的服务发现与配置。与其他分布式服务注册与发现的方案，Consul的方案更”一站式”，内置了服务注册与发现框架、分布一致性协议实现、健康检查、Key/Value存储、多数据中心方案，不再需要依赖其他工具（比如ZooKeeper等）。使用起来也较为简单。Consul用Golang实现，因此具有天然可移植性(支持Linux、Windows和Mac OS X)；安装包仅包含一个可执行文件，方便部署，与Docker等轻量级容器可无缝配合。
+Consul 的使用场景
+docker 实例的注册与配置共享
+coreos 实例的注册与配置共享
+vitess 集群
+SaaS 应用的配置共享
+与 confd ..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/10/12/service-discovery-consul/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Middleware"><i class="tag post-item-tag">Middleware</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/09/30/idgenerator/">分布式id几种生成方案</a></h2><time class="has-text-grey" datetime="2018-09-30T08:08:10.000Z">2018-09-30</time><p class="is-flex-grow-2 mt-2">一、UUIDUUID 是 通用唯一识别码（Universally Unique Identifier）的缩写，是一种软件建构的标准，亦为开放软件基金会组织在分布式计算环境领域的一部分。其目的，是让分布式系统中的所有元素，都能有唯一的辨识信息，而不需要通过中央控制端来做辨识信息的指定。如此一来，每个人都可以创建不与其它人冲突的UUID。在这样的情况下，就不需考虑数据库创建时的名称重复问题。目前最广泛应用的UUID，是微软公司的全局唯一标识符（GUID），而其他重要的应用，则有Linux ext2/ext3文件系统、LUKS加密分区、GNOME、KDE、Mac OS X等等。另外我们也可以在e2fsprogs包中的UUID库找到实现。
+UUID的标准形式包含32个16进制数字，以连字号分为五段，形式为8-4-4..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/09/30/idgenerator/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Golang"><i class="tag post-item-tag">Golang</i></a><a href="/tags/Lua"><i class="tag post-item-tag">Lua</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/08/30/go-lua-js/">Go 执行Lua脚本和JS脚本测试</a></h2><time class="has-text-grey" datetime="2018-08-30T09:08:12.000Z">2018-08-30</time><p class="is-flex-grow-2 mt-2">最近有个需求需要在Go项目里面执行动态脚本，github上有好几个lua执行解释器，但是有很多要不就很久没维护了，要不就没有什么文档，经过几个对比我最后用的是 https://github.com/yuin/gopher-lua。JS解析器用的github.com/robertkrimen/otto。
+具体测试代码如下，给有需求的朋友参考。
+github地址
+package main
+
+import (
+    &quot;fmt&quot;
+    &quot;github.com/robertkrimen/otto&quot;
+    &quot;github.com/yuin/gluamapper&quot;
+    &quot;github.com/yuin/gopher-lua&quot;
+    &quot;time&quot;
+)
+
+//function add(a, b)
+//return..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/08/30/go-lua-js/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Protobuf"><i class="tag post-item-tag">Protobuf</i></a><a href="/tags/Net"><i class="tag post-item-tag">Net</i></a><a href="/tags/HTPP"><i class="tag post-item-tag">HTPP</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/08/19/protobuf-on-http/">测试Protobuf在Http传输测试</a></h2><time class="has-text-grey" datetime="2018-08-19T10:08:37.000Z">2018-08-19</time><p class="is-flex-grow-2 mt-2">Demo：https://github.com/fanlv/ProtobufOnHttpGo
+一、编写Proto文件syntax = &quot;proto3&quot;;
+
+// 生成go代码
+//protoc --go_out=. user.proto
+
+// 生成oc代码
+//protoc --objc_out=. user.proto
+
+package user;
+
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message BaseResponse{
+  int64 code = 1;
+  string msg = 2;
+}
+
+
+message User{
+    string uid = 1;
+    string..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/08/19/protobuf-on-http/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/DataStructure"><i class="tag post-item-tag">DataStructure</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/08/12/binary-tree/">二叉树、2-3 树、红黑树</a></h2><time class="has-text-grey" datetime="2018-08-12T07:29:52.000Z">2018-08-12</time><p class="is-flex-grow-2 mt-2">
+有序数组的优势在于二分查找，链表的优势在于数据项的插入和数据项的删除。但是在有序数组中插入数据就会很慢，同样在链表中查找数据项效率就很低。综合以上情况，二叉树可以利用链表和有序数组的优势，同时可以合并有序数组和链表的优势，二叉树也是一种常用的数据结构。
+
+一、满二叉树一个二叉树，如果每一个层的结点数都达到最大值，则这个二叉树就是满二叉树。也就是说，如果一个二叉树的层数为 K，且结点总数是(2^k) -1 ，则它就是满二叉树。
+
+二、完全二叉树若设二叉树的深度为 h，除第 h 层外，其它各层 (1 ～ h-1) 的结点数都达到最大个数，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。
+
+三、二叉查找树二叉查找树（Binary Search Tree），（又：二叉搜索树，二叉排序树）它或者是一棵空树..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/08/12/binary-tree/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/IO"><i class="tag post-item-tag">IO</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/07/15/server-io-model/">高并发服务器IO模型</a></h2><time class="has-text-grey" datetime="2018-07-15T12:20:04.000Z">2018-07-15</time><p class="is-flex-grow-2 mt-2">服务端IO模型总结 草稿
+网络框架视角零、Nginx
+一、Netty（主从Reactor）MainReactor负责客户端的连接请求，并将请求转交给SubReactor
+SubReactor负责相应通道的IO读写请求
+非IO请求（具体逻辑处理）的任务则会直接写入队列，等待worker threads进行处理
+
+
+
+二、GRPC-GO （Goroutine Per Connection）net.Listen -&amp;gt; Serve() -&amp;gt; lis.Accept() net库的accept 
+-&amp;gt; 一个连接开个一个goroutine -&amp;gt; s.handleRawConn(rawConn) 
+-&amp;gt; newHTTP2Transport(conn, authInfo) -&amp;gt;  newH..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/07/15/server-io-model/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/iOS"><i class="tag post-item-tag">iOS</i></a><a href="/tags/GRPC"><i class="tag post-item-tag">GRPC</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/07/13/ios-grpc/">iOS之GRPC 测试（附代码）</a></h2><time class="has-text-grey" datetime="2018-07-13T13:30:25.000Z">2018-07-13</time><p class="is-flex-grow-2 mt-2">背景最近在用gRPC框架测试，想起去年调研Protocol Buffer在HTTP的时候传输，了解过这个框架，当时没深入。这次做gRPC服务器端，随便看下iOS这边实现方式，附上测试代码。
+demo地址： https://github.com/fanlv/gRPCDemo
+proto文件package user;
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message BaseResponse{
+  int64 code = 1;
+  string msg = 2;
+}
+
+message User{
+    string uid = 1;
+    string name = 2;
+    string ..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/07/13/ios-grpc/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Golang"><i class="tag post-item-tag">Golang</i></a><a href="/tags/HTTP"><i class="tag post-item-tag">HTTP</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/07/12/csrf/">跨域请求的几种解决方案</a></h2><time class="has-text-grey" datetime="2018-07-12T08:24:18.000Z">2018-07-12</time><p class="is-flex-grow-2 mt-2">需求背景最近做的Apigate优化，前端的同学要求能在配置后台页面上加上一键测试接口的功能，但是由于浏览器的同源策略防止跨域攻击，所以前端的页面默认是不能请求其他域名的接口。
+方案一 Nginx配置代理location /proxy {
+   if ($arg_url) {
+      proxy_pass $arg_url?;
+    }
+ }
+
+最开始为了简单就配置了一个简单的代理，通过url传入想要访问的接口例如：
+http://nginxserver/proxy?url=http://10.23.39.140:8080/app/list
+
+这样前端需要什么测试什么接口只需要通过url传过来，Nginx会方向代理到对应的url上返回结果。
+但是这个方法有个问题，url中的地址支持IP访问，不支持域名的..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/07/12/csrf/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Probability"><i class="tag post-item-tag">Probability</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/06/23/probability/">概率论基础</a></h2><time class="has-text-grey" datetime="2018-06-23T03:36:37.000Z">2018-06-23</time><p class="is-flex-grow-2 mt-2">样本空间与事件A⊂B 事件 B 包含了事件 A，A 被包含于 B
+A∩B A 与 B 的交集，表示事件 A 和事件 B 同时发生
+A∪B A 与 B 的并集，表示事件 A 或事件 B 或他们二者同事发生
+P(A|B) 在事件 B 发生下，事件 A 发生的概率
+
+对偶公式
+随机事件运算（1）交换律：A∪B=B∪A、AB=BA
+（2）结合律：( A∪B )∪C=A∪( B∪C )
+（3）分配律：A∪( BC )=( A∪B )( A∪C )A( B∪C )=( AB )∪( AC )
+（4）摩根律：A B=A∪B、A ∪ B=A B
+概率的三个基本性质
+二项系数
+蒙特卡罗（Monte Carlo）
+乘法公式P(AB)=P(B)P(A|B) = P(A)P(B|A)
+全概率公式
+贝叶斯公式（Bayes）
+</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/06/23/probability/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Calculus"><i class="tag post-item-tag">Calculus</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/06/22/calculus/">微积分基础</a></h2><time class="has-text-grey" datetime="2018-06-22T09:15:26.000Z">2018-06-22</time><p class="is-flex-grow-2 mt-2">导数(Derivatives)
+导数是函数的局部性质。一个函数在某一点的导数描述了这个函数在这一点附近的变化率。如果函数的自变量和取值都是实数的话，函数在某一点的导数就是该函数所代表的曲线在这一点上的切线斜率。导数的本质是通过极限的概念对函数进行局部的线性逼近。例如在运动学中，物体的位移对于时间的导数就是物体的瞬时速度。
+
+一阶导数为 0 的时候，对应的值不是最大值（局部）就是最小值（局部）。
+求导规则加（减）法则：（f+g)'=f'+g'
+乘法法则：（f*g)'=f'*g+g'*f
+除法法则：（f/g)'=(f'*g-g'*f)/g^2
+y = x^n =&amp;gt; dy/dx = nx^n-1
+y = sin(x) =&amp;gt; dy/dx = cos(x)
+y = e^x =&amp;gt; dy/dx = e^..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/06/22/calculus/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Statistics"><i class="tag post-item-tag">Statistics</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/06/19/statistics/">统计学基础</a></h2><time class="has-text-grey" datetime="2018-06-19T07:00:09.000Z">2018-06-19</time><p class="is-flex-grow-2 mt-2">最近休息在家无聊，整理下之前看的统计学的一些基础知识，方便以后查阅吧。
+基础名词
+均值 （Mean），所有数相加出去数量。
+中位数 （Median）， 中间一个数，或者是中间的两个数相加除以 2
+众数 （Mode），出现次数最多的数。
+极差 （Range），最大值减去最小值（Max-Min）
+中程数（Mid-Range） （Max+Min）/ 2
+样本 （sameple）
+总体 （population）
+总体的均值 （mean of a population） 𝝻./
+样本的均值 (mean of a sameple)
+总体方差 （variance of a population）
+样本方差（Sample variance）
+
+基础概念和公式基础概念对应的数学符号：
+总体均值（Population Mea..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/06/19/statistics/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Note"><i class="tag post-item-tag">Note</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/06/10/si-shu-wu-jin/">《四书五经入门》</a></h2><time class="has-text-grey" datetime="2018-06-10T03:28:23.000Z">2018-06-10</time><p class="is-flex-grow-2 mt-2">一、前言儒家学说，简称儒学，它的核心内容是儒家思想，由春秋末期思想家孔子所创立。孔子在总结、概括和继承了夏、商、周三代传统文化的基础上形成了一个完整的思想体系，它的表现形式是一些道德行为准则。
+
+在政治学上，主张仁政、行王道，通过礼来理顺君臣、官民和各种社会关系；
+在伦理学上，以“仁”为核心，强调通过提高自身修养来实现人与人之间和谐相处；
+在历史学上，注重编修历史，并于记叙中体现微言大义；
+在经济学上，主张重义轻利、重官轻商、重本抑末；
+在教育学上，格外强调道德培养的重要性。
+
+并把“仁”作为最高道德准则……儒家学说的创立者以孔子和孟子为代表，其中的孔子被尊为一代宗师。后来的各代中虽各有发展，但都以孔子和孟子的思想为核心。
+“四书五经”基本上都是由孔子与他的弟子及传袭者编纂完成，所体现的都是孔子所尊创的儒家..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/06/10/si-shu-wu-jin/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/HTTP"><i class="tag post-item-tag">HTTP</i></a><a href="/tags/Net"><i class="tag post-item-tag">Net</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/06/08/simple-http/">深入浅出HTTP</a></h2><time class="has-text-grey" datetime="2018-06-08T08:19:47.000Z">2018-06-08</time><p class="is-flex-grow-2 mt-2">深入浅出HTTP一、什么是Http和TCP
+HTTP（HyperText Transfer Protocol)超文本传输协议，是互联网上应用最为广泛的一种网络协议。所有的WWW文件都必须遵守这个标准。设计HTTP最初的目的是为了提供一种发布和接收HTML页面的方法。1960年美国人Ted Nelson构思了一种通过计算机处理文本信息的方法，并称之为超文本（hypertext）,这成为了HTTP超文本传输协议标准架构的发展根基。Ted Nelson组织协调万维网协会（World Wide Web Consortium）和互联网工程工作小组（Internet Engineering Task Force ）共同合作研究，最终发布了一系列的RFC，其中著名的RFC 2616定义了HTTP 1.1。
+
+
+TCP（T..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/06/08/simple-http/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/HTTP"><i class="tag post-item-tag">HTTP</i></a><a href="/tags/Protobuf"><i class="tag post-item-tag">Protobuf</i></a><a href="/tags/Net"><i class="tag post-item-tag">Net</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/06/03/protobuf-on-http-study/">Protobuf On HTTP 技术预研 （附代码）</a></h2><time class="has-text-grey" datetime="2018-06-03T13:01:29.000Z">2018-06-03</time><p class="is-flex-grow-2 mt-2">Protobuf 技术预研Demo地址：https://github.com/fanlv/ProtobufOnHttp
+Demo地址：https://github.com/fanlv/ProtobufOnHttpGo
+一、背景现在客户端与服务器通讯主要通过Json来做数据交互，本次调研主要比较Protobuf项目中使用的优缺点，和可行性。
+二、Protobuf说明2.1 什么是ProtobufProtocolBuffer(以下简称PB)是google 的一种数据交换的格式，它独立于语言，独立于平台。大部分IM通讯协议都是使用PB来传输。具体代表性的有支付宝、微信等App。
+说白了，PB就是一种序列化协议，我们开发中想在什么场景中使用Protobuf做为数据交换的序列化协议，取决于自己的业务。
+2.2 Pro..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/06/03/protobuf-on-http-study/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/tags/iOS"><i class="tag post-item-tag">iOS</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2018/06/02/ios-cookie/">iOS Cookie 存储相关技术</a></h2><time class="has-text-grey" datetime="2018-06-02T15:22:09.000Z">2018-06-02</time><p class="is-flex-grow-2 mt-2">iOS Cookie 存储相关技术一、什么是Cookie
+ Cookie，有时也用其复数形式 Cookies，指某些网站为了辨别用户身份、进行 session 跟踪而储存在用户本地终端上的数据（通常经过加密）。定义于 RFC2109 和 2965 中的都已废弃，最新取代的规范是 RFC6265 [1]  。（可以叫做浏览器缓存）来自百度百科
+
+说白了Cookie就是提供服务器存储相关数据到客户端的一种解决方案，服务器通过返回的Http头中告知客户端，我设置了Cookie，客户端收到请求以后，会读出Http响应的Header里面把对应的Cookie的key、value值持久化存到本地的Cookie文件，下次再请求服务器相关域名的接口中，会自动带上Cookie相关数据。当然客户端也可以主动设置、读取、删除这些C..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2018/06/02/ios-cookie/">更多</a></section></article><section class="paginator is-flex is-justify-content-flex-end is-flex-wrap-wrap mt-5"><a class="extend prev" rel="prev" href="/page/3/"><i class="iconfont icon-prev has-text-grey"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span></section></section><aside class="column is-hidden-mobile is-4-tablet is-3-widescreen"><style>.search-widget .search-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--second-text-color);
+}
+.search-widget .search-content {
+    position: absolute;
+    left: 0;
+    top: calc(100% - 3px);
+    z-index: 2;
+
+    width: 100%;
+    height: 0;
+    max-height: 550px;
+
+    overflow: auto;
+    box-sizing: border-box;
+
+    background: var(--top-bar-bg-color);
+    backdrop-filter: blur(var(--backdropFilter));
+    -webkit-backdrop-filter: blur(var(--backdropFilter));
+
+    border-bottom-left-radius: var(--borderRadius);
+    border-bottom-right-radius: var(--borderRadius);
+    box-shadow: 0 12px 15px rgba(0, 0, 0, 0.08);
+}
+
+.search-widget .search-content a:hover h5 {
+    color: #3273dc!important;
+}
+</style><main class="aside-card-container search-widget is-relative"><label for="searchInput"><div class="is-flex px-4" id="searchButton"><i class="iconfont icon--search1 mr-1"></i><input class="search-input is-flex-grow-1" id="searchInput" placeholder="搜索内容.."></div></label><section class="search-content content" id="searchContent"></section></main><script>var searchDatabase = []
+var searchInputEl = document.getElementById('searchInput')
+var searchButtonEl = document.getElementById('searchButton')
+var searchResultEl = document.getElementById('searchContent')
+
+searchInputEl.oninput = function (evt) {
+    var searchValue = evt.srcElement.value
+    var haveSearchValue = Boolean(searchValue.trim())
+    if (!haveSearchValue) {
+        searchResultEl.style.height = 0
+        searchResultEl.innerHTML = null
+        return
+    }
+
+    var searchResults = searching(searchValue)
+
+    if (searchResults.length > 0) {
+        renderSearchResults(searchResults)
+    }
+}
+
+function renderSearchResults(results) {
+    searchResultEl.innerHTML = null
+    var fragment = document.createDocumentFragment()
+
+    results.forEach(function (item) {
+        var link = document.createElement('a')
+        var title = document.createElement('h5')
+        var content = document.createElement('p')
+
+        title.className = 'mb-1'
+        title.innerText = item.title
+        content.innerText = item.content
+
+        link.href = item.link
+        link.appendChild(title)
+        link.appendChild(content)
+        link.className = 'p-4 is-block'
+
+        fragment.appendChild(link)
+    })
+
+    searchResultEl.appendChild(fragment)
+    searchResultEl.style.height = 'auto'
+}
+
+function searching(inputText) {
+    var inputTexts = inputText.split(' ')
+    var searchResults = []
+    inputTexts.forEach(function (searchKey) {
+        var haveSearchValue = Boolean(searchKey.trim())
+        if (!haveSearchValue) return
+
+        var key = searchKey.toLowerCase()
+
+        for (var entry of searchDatabase) {
+            var title = entry.getElementsByTagName('title')[0].textContent
+            var link = entry.getElementsByTagName('link')[0].getAttribute('href')
+            var contentWithTags = entry.getElementsByTagName('content')[0].textContent
+            var rawContent = contentWithTags.trim().replace(/<[^>]+>/g, '').toLowerCase()
+
+            var LENGTH = 80
+            var finalContent = ''
+            var contentLength = rawContent.length
+            var searchResultIdx = rawContent.indexOf(key)
+
+            var startIdx = searchResultIdx - 20,
+                endIdx = startIdx + LENGTH
+
+            if (startIdx < 0) {
+                startIdx = 0
+                endIdx = 100
+            }
+
+            endIdx > contentLength && (endIdx = contentLength)
+
+            finalContent = rawContent.substring(startIdx, endIdx)
+
+            if (title.indexOf(key) > -1 || searchResultIdx > -1) {
+                searchResults.push({
+                    link: link,
+                    title: title,
+                    content: finalContent
+                })
+            }
+        }
+    })
+    return searchResults
+}
+
+searchButtonEl.onclick = function () {
+    if (searchDatabase.length > 0) return;
+
+    fetch(window.location.href + '/search.xml').then(res => res.text()).then(res => {
+        var domparser = new DOMParser
+        var doc = domparser.parseFromString(res, 'application/xml')
+        searchDatabase = doc.getElementsByTagName('search')[0].children
+    })
+}</script><main class="aside-card-container profile-widget"><!-- todo: 使用取色工具动态阴影--><section class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center"><section class="is-flex is-justify-content-center avatar is-clipped skeleton"><!-- debug images "https://api.ixiaowai.cn/gqapi/gqapi.php"--><img class="js-img-fadeIn" src="https://upload-images.jianshu.io/upload_images/12321605-8743f44f528a9c79.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="user avatar"></section><h3 class="user-name">Ryo</h3><blockquote class="has-text-centered is-relative"><span style="margin-bottom: 5px;">行万里路，读万卷书</span></blockquote><address class="has-text-centered has-text-grey"><i class="iconfont icon-location" style="margin-right: 5px;"></i><span class="has-text-grey">China</span></address></section><section class="sns-container is-flex is-justify-content-center is-align-items-center"><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/fanlv"><i class="iconfont icon-github"></i></a><!-- Ins--><a title="instagram" target="_blank" rel="noopener nofollow" href="//www.instagram.com/fanlvlgh"><i class="iconfont icon-ins"></i></a><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section></main><main class="aside-card-container recent-widget"><h3>最近</h3><ul><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=服务" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/2018/10/12/service-discovery-consul/">服务发现之Consul</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2018-10-12T07:18:18.000Z">2018-10-12</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=分布" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/2018/09/30/idgenerator/">分布式id几种生成方案</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2018-09-30T08:08:10.000Z">2018-09-30</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=Go" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/2018/08/30/go-lua-js/">Go 执行Lua脚本和JS脚本测试</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2018-08-30T09:08:12.000Z">2018-08-30</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=测试" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/2018/08/19/protobuf-on-http/">测试Protobuf在Http传输测试</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2018-08-19T10:08:37.000Z">2018-08-19</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=二叉" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/2018/08/12/binary-tree/">二叉树、2-3 树、红黑树</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2018-08-12T07:29:52.000Z">2018-08-12</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=高并" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/2018/07/15/server-io-model/">高并发服务器IO模型</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2018-07-15T12:20:04.000Z">2018-07-15</time></section></li></ul></main><main class="aside-card-container categories-widget category-page"><h3>分类</h3><section><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Architecture/">Architecture</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Arithmetic/">Arithmetic</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Backend/">Backend</a><span class="category-list-count">39</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Frontend/">Frontend</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Literature/">Literature</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Maths/">Maths</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MySQL/">MySQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Net/">Net</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/System/">System</a><span class="category-list-count">9</span></li></ul></section></main><main class="aside-card-container archives-widget"><h3>归档</h3><section><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/08/">八月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/06/">六月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">十二月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/08/">八月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">二月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">十二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">7</span></li></ul></section></main><main class="aside-card-container tag-widget"><h3>标签</h3><section><a href="/tags/DataStructure"><span class="tag post-item-tag" style="margin-bottom: 5px;">DataStructure</span></a><a href="/tags/Calculus"><span class="tag post-item-tag" style="margin-bottom: 5px;">Calculus</span></a><a href="/tags/Golang"><span class="tag post-item-tag" style="margin-bottom: 5px;">Golang</span></a><a href="/tags/HTTP"><span class="tag post-item-tag" style="margin-bottom: 5px;">HTTP</span></a><a href="/tags/Middleware"><span class="tag post-item-tag" style="margin-bottom: 5px;">Middleware</span></a><a href="/tags/Envoy"><span class="tag post-item-tag" style="margin-bottom: 5px;">Envoy</span></a><a href="/tags/Lua"><span class="tag post-item-tag" style="margin-bottom: 5px;">Lua</span></a><a href="/tags/iOS"><span class="tag post-item-tag" style="margin-bottom: 5px;">iOS</span></a><a href="/tags/GRPC"><span class="tag post-item-tag" style="margin-bottom: 5px;">GRPC</span></a><a href="/tags/Note"><span class="tag post-item-tag" style="margin-bottom: 5px;">Note</span></a><a href="/tags/LinearAlgebra"><span class="tag post-item-tag" style="margin-bottom: 5px;">LinearAlgebra</span></a><a href="/tags/MySQL"><span class="tag post-item-tag" style="margin-bottom: 5px;">MySQL</span></a><a href="/tags/Probability"><span class="tag post-item-tag" style="margin-bottom: 5px;">Probability</span></a><a href="/tags/Protobuf"><span class="tag post-item-tag" style="margin-bottom: 5px;">Protobuf</span></a><a href="/tags/Net"><span class="tag post-item-tag" style="margin-bottom: 5px;">Net</span></a><a href="/tags/HTPP"><span class="tag post-item-tag" style="margin-bottom: 5px;">HTPP</span></a><a href="/tags/Distribution"><span class="tag post-item-tag" style="margin-bottom: 5px;">Distribution</span></a><a href="/tags/Redis"><span class="tag post-item-tag" style="margin-bottom: 5px;">Redis</span></a><a href="/tags/IO"><span class="tag post-item-tag" style="margin-bottom: 5px;">IO</span></a><a href="/tags/Consul"><span class="tag post-item-tag" style="margin-bottom: 5px;">Consul</span></a><a href="/tags/Sort"><span class="tag post-item-tag" style="margin-bottom: 5px;">Sort</span></a><a href="/tags/Statistics"><span class="tag post-item-tag" style="margin-bottom: 5px;">Statistics</span></a><a href="/tags/Linux"><span class="tag post-item-tag" style="margin-bottom: 5px;">Linux</span></a><a href="/tags/eng-practices"><span class="tag post-item-tag" style="margin-bottom: 5px;">eng-practices</span></a><a href="/tags/Memory"><span class="tag post-item-tag" style="margin-bottom: 5px;">Memory</span></a><a href="/tags/Backend"><span class="tag post-item-tag" style="margin-bottom: 5px;">Backend</span></a><a href="/tags/GoSourceCode"><span class="tag post-item-tag" style="margin-bottom: 5px;">GoSourceCode</span></a><a href="/tags/Architecture"><span class="tag post-item-tag" style="margin-bottom: 5px;">Architecture</span></a><a href="/tags/ETCD"><span class="tag post-item-tag" style="margin-bottom: 5px;">ETCD</span></a><a href="/tags/Chip"><span class="tag post-item-tag" style="margin-bottom: 5px;">Chip</span></a></section></main></aside></div></article><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/fanlv"><i class="iconfont icon-github"></i></a><!-- Ins--><a title="instagram" target="_blank" rel="noopener nofollow" href="//www.instagram.com/fanlvlgh"><i class="iconfont icon-ins"></i></a><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> Ryo 2022</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span>博学之，审问之，慎思之，明辨之，笃行之</span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></body></html>

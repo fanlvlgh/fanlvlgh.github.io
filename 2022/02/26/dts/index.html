@@ -1,0 +1,274 @@
+<!DOCTYPE html><html class="appearance-auto" lang="zh-CN"><head><meta charset="UTF-8"><title>数据传输系统落地和思考</title><meta name="description" content="行万里路，读万卷书"><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><script>var _hmt = _hmt || [];
+(function() {
+var hm = document.createElement("script");
+hm.src = "https://hm.baidu.com/hm.js?" + '2c076421eb9f21a0a143f8ee9c4ab171';
+var s = document.getElementsByTagName("script")[0];
+s.parentNode.insertBefore(hm, s);
+})();</script><!-- End Baidu Analytics --><meta name="referrer" content="no-referrer"><link rel="icon" href="/null"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="一、背景我们的产品需要支持 Multi-Geo 功能。 
+什么是Multi-Geo？简单的说就是：“将一个租户下不同用户/设备/组织等数据，分散存储在不同的地理位置的能力”，在同一个租下管理员可以配置任意用户的数据驻留地（Preferred Data Location简称PDL）。
+该功能主要是解决跨国企业，数据合规存放的问题。支持同一个企业下，不用国家的用户，数据存放在不同的国家的机房。
+Multi-Geo的功能涉及到几点核心能力。
+
+数据的路由能力。比如，我们服务在CN收到一个User数据查询需求，首先我们要知道这个User是归属于CN还是i18n（国外）的Unit，然后再把请求转发给相应的Unit的服务。
+数据的定位能力，管理员更新用户的PDL时候，我们需要把用户所有的数据（存量和增量）找出来，然后发.."><meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">Ryo's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">数据传输系统落地和思考</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/about">关于</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/about">关于</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E8%83%8C%E6%99%AF"><span class="toc-text">一、背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%95%B0%E6%8D%AE%E8%B7%AF%E7%94%B1"><span class="toc-text">二、数据路由</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%BD%8D"><span class="toc-text">三、数据定位</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%AD%A3%E5%90%91%E6%9F%A5%E8%AF%A2"><span class="toc-text">3.1 正向查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%95%B0%E6%8D%AE%E6%89%93%E6%A0%87"><span class="toc-text">3.2 数据打标</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-1-MySQL-Schema-%E6%89%93%E6%A0%87%E8%A7%84%E5%88%99%E6%8F%8F%E8%BF%B0"><span class="toc-text">3.2.1 MySQL Schema 打标规则描述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-NoSQL-Schema-%E6%89%93%E6%A0%87%E8%A7%84%E5%88%99%E6%8F%8F%E8%BF%B0"><span class="toc-text">3.2.2 NoSQL Schema 打标规则描述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-3-%E6%89%93%E6%A0%87%E6%B5%81%E7%A8%8B%E5%A6%82%E4%B8%8B"><span class="toc-text">3.2.3 打标流程如下</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-4-%E6%89%93%E6%A0%87%E5%BA%93%E9%80%89%E5%9E%8B"><span class="toc-text">3.2.4 打标库选型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-4-%E6%89%93%E6%A0%87%E6%96%B9%E6%A1%88%E6%80%BB%E7%BB%93"><span class="toc-text">3.2.4 打标方案总结</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93"><span class="toc-text">四、数据传输</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E4%B8%9A%E5%8A%A1%E5%AE%9E%E4%BD%93"><span class="toc-text">4.1 业务实体</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E6%96%B9%E6%A1%88"><span class="toc-text">4.2 数据传输方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-1-%E5%AD%98%E9%87%8F-%E5%81%9C%E5%86%99-%E5%A2%9E%E9%87%8F"><span class="toc-text">4.2.1 存量+停写+增量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-1-%E5%81%9C%E5%86%99-%E5%85%A8%E9%87%8F%E5%90%8C%E6%AD%A5"><span class="toc-text">4.2.1 停写+全量同步</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-3-%E5%8F%8C%E5%86%99%E6%96%B9%E6%A1%88"><span class="toc-text">4.2.3 双写方案</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E8%B7%A8Unit%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E9%80%9A%E9%81%93"><span class="toc-text">4.3 跨Unit数据传输通道</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-Binloger-%E6%A8%A1%E5%9D%97"><span class="toc-text">4.4 Binloger 模块</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%9E%B6%E6%9E%84%E6%80%BB%E8%A7%88"><span class="toc-text">五、架构总览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB%E4%B8%AD%E8%B8%A9%E7%9A%84%E5%9D%91"><span class="toc-text">六、数据迁移中踩的坑</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-MySQL-%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB%E6%97%B6%E5%8C%BA%E9%97%AE%E9%A2%98"><span class="toc-text">6.1 MySQL 数据迁移时区问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-PK-Duplicate-Error-%E9%97%AE%E9%A2%98"><span class="toc-text">6.2 PK Duplicate Error 问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-INSERT-%E2%80%A6-ON-DUPLICATE"><span class="toc-text">6.3 INSERT … ON DUPLICATE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-%E5%94%AF%E4%B8%80%E7%B4%A2%E5%BC%95%E5%88%97%E6%9C%89-Null-%E5%80%BC"><span class="toc-text">6.4 唯一索引列有 Null 值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%90%8D%E8%AF%8D%E8%A7%A3%E9%87%8A"><span class="toc-text">七、名词解释</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/eng-practices"><i class="tag post-item-tag">eng-practices</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">数据传输系统落地和思考</h1><time class="has-text-grey" datetime="2022-02-26T14:00:00.000Z">2022-02-26</time><article class="mt-2 post-content"><h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>我们的产品需要支持 <a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/microsoft-365/enterprise/microsoft-365-multi-geo?view=o365-worldwide">Multi-Geo</a> 功能。 </p>
+<p>什么是<code>Multi-Geo</code>？简单的说就是：“将一个租户下不同用户/设备/组织等数据，分散存储在不同的地理位置的能力”，在同一个租下管理员可以配置任意用户的数据驻留地（<code>Preferred Data Location</code>简称<code>PDL</code>）。</p>
+<p>该功能主要是解决跨国企业，数据合规存放的问题。支持同一个企业下，不用国家的用户，数据存放在不同的国家的机房。</p>
+<p><code>Multi-Geo</code>的功能涉及到几点核心能力。</p>
+<ol>
+<li><strong>数据的路由能力</strong>。比如，我们服务在<code>CN</code>收到一个<code>User</code>数据查询需求，首先我们要知道这个<code>User</code>是归属于<code>CN</code>还是<code>i18n</code>（国外）的<code>Unit</code>，然后再把请求转发给相应的<code>Unit</code>的服务。</li>
+<li><strong>数据的定位能力</strong>，管理员更新用户的<code>PDL</code>时候，我们需要把用户所有的数据（存量和增量）找出来，然后发送到新的数据驻留地。</li>
+<li><strong>数据传输的能力</strong>，数据传输主要包括存量数据和增量数据的传输过程，存量和增量的<code>overlap</code>怎么处理，业务上是否需要停写，什么时间点修改数据的<code>Unit</code>信息，让后续数据的增删改查请求转发到更新以后的<code>Unit</code>。</li>
+</ol>
+<h2 id="二、数据路由"><a href="#二、数据路由" class="headerlink" title="二、数据路由"></a>二、数据路由</h2><p>为了支持数据路由的能力，我们引入了<code>Global Meta</code> 和 <code>Edge Proxy</code>两个组件。这个是之前做<code>Unit</code>互通就已经有了的组件，不是本文讨论重点。简单说下大概流程如下：</p>
+<p>假设一个用户在<code>CN</code>的发起请求，拉取一个<code>i18n</code>的用户的资料，大概链路应该是这样</p>
+<ol>
+<li>客户端<code>Http</code>调用查询<code>GetUserInfo</code>接口查询用户资料。</li>
+<li><code>HttpGateway</code>收到用户的<code>Http</code>请求，转成<code>Thrift</code>请求，<code>RPC</code>调用<code>User</code>服务的<code>GetUserInfo</code>接口。</li>
+<li><code>User</code>服务收到请求以后，会有一个通用的<code>Cross-MiddleWare</code>，它会提出<code>IDL</code>中的打了<code>Cross</code>标记的<code>Tag</code>，当前上下这个<code>Tag</code>是<code>UserID</code>字段，所以<code>Cross-MiddleWare</code> 会提取出 <code>UserID</code>，然后去<code>Global Meta</code>查询这个<code>UserID</code>的归属于哪个<code>Unit</code>。</li>
+<li><code>Cross-MiddleWare</code>查出这个<code>UserID</code>不属于当前<code>Unit</code>以后，它会设置<code>Dst-Unit</code>和<code>Dst-Service</code>，然后当前请求转发给<code>EdgeProxy</code>。</li>
+<li><code>EdgeProxy</code>取出<code>Dst-Unit</code>，然后把这个请求发送<code>Dst-Unit</code>对应的<code>EdgeProxy</code>。</li>
+<li><code>Dst-Unit</code>的<code>EdgeProxy</code> 会取出<code>Dst-Service</code>，然后把请求转发给<code>Dst-Service</code>，这里就是转发给<code>i18n</code>的<code>User</code>服务。</li>
+<li><code>i18n</code>的<code>User</code>服务发现当前请求是<code>Cross</code>过来的，不会再去请求<code>Global Meta</code>，会直接走本地的查询逻辑，查出<code>User</code>的数据返回给<code>EdgeProxy</code></li>
+<li><code>EdgeProxy</code>拿到<code>Response</code>以后，会走原路返回给客户端。</li>
+</ol>
+<p><img src="https://upload-images.jianshu.io/upload_images/12321605-b94e52b2371bb8db.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h2 id="三、数据定位"><a href="#三、数据定位" class="headerlink" title="三、数据定位"></a>三、数据定位</h2><p>数据定位能力是指，我们能快速在<code>MySQL</code>、<code>Redis</code>、<code>Abase</code>这些存储组件中找到归属于<code>User</code>所有的数据的能力。常用的解决方案有两种：正向查询定位、数据打标定位。</p>
+<h3 id="3-1-正向查询"><a href="#3-1-正向查询" class="headerlink" title="3.1 正向查询"></a>3.1 正向查询</h3><p>一是正向查询，比如我们有一个<code>UserID</code>，我们可以查到<code>User</code>下面所有的<code>Chat</code>，再查到归属于<code>Chat</code>所有的<code>Message</code>，然后查到<code>Message</code>下面的<code>Reaction</code>和<code>File</code>等等资源，依次类推可以查到所有<code>User</code>相关的信息。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/12321605-b56c83b3c7878d46.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>正向迁移的方案有几个弊端</p>
+<ol>
+<li>并不是所有的场景都能正向查询，就比如文件转发场景，有两个表<code>file_info</code>和<code>file_ref</code>,每次转发的时候，会新产生一个<code>file_key</code>，并把<code>file_key</code>和<code>parent_key</code>关系记录到<code>file_ref</code>中。<code>file_ref</code>表索引只有<code>file_key</code>，如果想通过<code>parent_key</code>拉取改文件所有被转发的记录，是不支持的。</li>
+<li>部分数据还需要解析内容才能得到，比如<code>Message</code>和<code>File</code>关系，<code>Message</code>的<code>Content</code>是加密以后存在数据库中的，如果要拿到<code>Message</code>中的<code>file_key</code>，我们必须把内容取出来，解密，然后反序列化为<code>PB</code>的<code>Struct</code>。这样对业务耦合太重，会对系统的扩展性和可维护性造成一定困难。</li>
+</ol>
+<p>这个方案不够<code>General</code>，站在架构侧我们希望能够提供更<code>General</code>的方案，而不是去过多的关注业务的数据结构、数据层级。</p>
+<h3 id="3-2-数据打标"><a href="#3-2-数据打标" class="headerlink" title="3.2 数据打标"></a>3.2 数据打标</h3><p>数据打标，就是有一个专门的数据打标系统，会对系统里面每条产生的数据打上标记（有个前提需要基础组件支持<code>binlog</code>），可以按自己的需求打上<code>User</code>标、<code>Chat</code>标等等，查询的时候，能够按自己想要的方式快速查询出来。打标方式如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/12321605-88e519cf13ce5193.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h4 id="3-2-1-MySQL-Schema-打标规则描述"><a href="#3-2-1-MySQL-Schema-打标规则描述" class="headerlink" title="3.2.1 MySQL Schema 打标规则描述"></a>3.2.1 MySQL Schema 打标规则描述</h4><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>repo_name</td>
+<td>数据库名</td>
+</tr>
+<tr>
+<td>table_name</td>
+<td>数据表名</td>
+</tr>
+<tr>
+<td>index_keys</td>
+<td>唯一索引列，用于存量数据的获取，比如<code>Message</code>表唯一索引是[“chat_id”,”message_id”]，消费到<code>Message</code>表<code>binlog</code>时候，我们会记录下这两个列的值。方便后面需要迁移数据的时候，我们能够快速定位到相关数据</td>
+</tr>
+<tr>
+<td>need-replace-pk</td>
+<td>是否需要替换PK字段，如果表的<code>id</code>字段是用的<code>MySQL</code>的自增<code>id</code>，所以插入时候可能会冲突，需要插入前替换掉</td>
+</tr>
+<tr>
+<td>entity-type</td>
+<td>实体类型，比如<code>Message</code>、<code>Chat</code>、<code>File</code>、<code>Reaction</code>，每个数据都可以归属到一个实体类型，实体类型之间也有层级归属关系。</td>
+</tr>
+<tr>
+<td>entity-id-field</td>
+<td>哪一列是实体数据，比如<code>chat</code>表的<code>id</code>字段表示<code>Chat</code>这个实体数据</td>
+</tr>
+</tbody></table>
+<p><code>MySQL</code>的数据打标匹配比较简单，收到<code>MySQL</code>的<code>Binlog</code>，用<code>DB</code>+<code>Table</code>就能<code>Match</code>到<code>binlog</code>对应的<code>Schema</code>，然后可以找到<code>Schema</code>里面的<code>IndexKeys</code>和<code>Entity</code>数据，就能知道这个<code>binlog</code>表示的<code>DataEntity</code>数据。</p>
+<h4 id="3-2-2-NoSQL-Schema-打标规则描述"><a href="#3-2-2-NoSQL-Schema-打标规则描述" class="headerlink" title="3.2.2 NoSQL Schema 打标规则描述"></a>3.2.2 NoSQL Schema 打标规则描述</h4><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>repo_name</td>
+<td>数据库名</td>
+</tr>
+<tr>
+<td>pattern</td>
+<td>key的格式，如 <code>{{env}}:chat_last_msg_id:{{message_id}}</code></td>
+</tr>
+<tr>
+<td>entity-type</td>
+<td>实体类型，比如<code>Message</code></td>
+</tr>
+<tr>
+<td>entity-id-field</td>
+<td>哪一列是实体数据，比如上面<code>pattern</code>中的<code>message_id</code></td>
+</tr>
+</tbody></table>
+<p><code>NoSQL</code>的匹配相对要复杂一点，首先需要根据<code>Repo</code>的纬度构建压缩字典树<code>radix_tree</code>，然后通过<code>key</code>来匹配，找到<code>key</code>对应的<code>Schema</code>。有点类似<code>Http</code>请求的<code>Path</code>匹配，有点不同的是<code>Path</code>都是“<code>/</code>”结束，截取变量的话相对简单一些。</p>
+<p>做<code>NoSQL</code>的<code>Key</code>匹配的时候，可能比<code>Path</code>要复杂一点，比如<code>{{table_id}}_{{rev}}_{{rec_id}}</code>和<code>{{table_id}}_{{rev}}_{{rec_id}}_{{level}</code> 用<code>tableStr_1000_abccc_1</code>key是可以同时匹配上面两个的<code>pattern</code>的。</p>
+<p>这个时候只能通过增加变量的限制条件，比如<code>rec_id</code>必须包含<code>xx</code>字符串，不包含<code>xx</code>字符串，变量必须是数字、变量长度固定是多少位的方式来做匹配。</p>
+<h4 id="3-2-3-打标流程如下"><a href="#3-2-3-打标流程如下" class="headerlink" title="3.2.3 打标流程如下"></a>3.2.3 打标流程如下</h4><p><img src="https://upload-images.jianshu.io/upload_images/12321605-53278902baada353.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h4 id="3-2-4-打标库选型"><a href="#3-2-4-打标库选型" class="headerlink" title="3.2.4 打标库选型"></a>3.2.4 打标库选型</h4><p><img src="https://upload-images.jianshu.io/upload_images/12321605-4893819dee218052.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>存储选型前，需要明确自己的数据量和需求。</p>
+<ol>
+<li>存量数据数在<code>百亿~千亿</code>级别，数据总大小概在<code>几百TB</code>左右。</li>
+<li>增量<code>Binlog</code>的<code>QPS</code>在<code>200W</code>左右， 需要打标的增量数据，预期有<code>10W</code>左右<code>TPS</code>左右。</li>
+<li>写多读少，主要是打标迁移的时候才会查，还会有少量的删除操作。</li>
+<li>对事务没有要求。</li>
+<li>有一定的一致性要求，写入打标数据以后，需要能再预期的时间内查到。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>数据库类型</th>
+<th>常见数据库</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>关系型</td>
+<td>MySQL、Oracle、DB2、SQLServer 等。</td>
+</tr>
+<tr>
+<td>非关系型</td>
+<td>Hbase、Redis、MongodDB 等。</td>
+</tr>
+<tr>
+<td>行式存储</td>
+<td>MySQL、Oracle、DB2、SQLServer 等。</td>
+</tr>
+<tr>
+<td>列式存储</td>
+<td>Hbase、ClickHouse 等。</td>
+</tr>
+<tr>
+<td>分布式存储</td>
+<td>Cassandra、Hbase、MongodDB 等。</td>
+</tr>
+<tr>
+<td>键值存储</td>
+<td>Memcached、Redis、MemcacheDB 等。</td>
+</tr>
+<tr>
+<td>图形存储</td>
+<td>Neo4J、TigerGraph 等。</td>
+</tr>
+<tr>
+<td>文档存储</td>
+<td>MongoDB、CouchDB 等</td>
+</tr>
+</tbody></table>
+<p>分别调研了公司内部几个代表性的存储</p>
+<ol>
+<li>关系型，<code>NDB</code>，对标业界最流行的<code>cloud native</code>的<code>RDS AWS Aurora/Alibaba  PolarDB</code>，100%兼容<code>MySQL</code>，计算存储分离，独立扩缩计算/存储，成本较低。 <code>DBA</code>给的数据是单台机器<code>20</code>核 <code>128G</code>内存，最大写入<code>TPS</code>可以到 <code>15~20K</code>左右。</li>
+<li>非关系型，<code>Abase</code>，基于<code>RocksDB</code>的分布式<code>KV</code>存储，支持<code>Redis</code>协议、极致高可用、低延迟、大容量的在线存储 &amp; 缓存服务，一个小集群能支持几十万的写入。单库支持<code>PB</code>级别的数据存储。</li>
+<li>列式存储，<code>ClickHouse</code>，适用于大批量的数据插入、基本无需修改现有数据、拥有许多列的大宽表、在指定的列进行聚合计算操作、快速执行的 <code>SELECT</code> 查询等场景。目前只支持从<code>Kafka</code>导入数据，且导入的数据，有一定的延迟（10分钟以内）才能查到。</li>
+</ol>
+<h4 id="3-2-4-打标方案总结"><a href="#3-2-4-打标方案总结" class="headerlink" title="3.2.4 打标方案总结"></a>3.2.4 打标方案总结</h4><p>打标方案的好处是 方案更<code>General</code>一些，业务方只需要按照我们提供的<code>Schema</code>规则，来我们系统里面注册就好了。</p>
+<p>缺点就是，增加了资源的开销，需要额外的存储。</p>
+<p>还有一个就是，打标方案有一个假设，就是一定能从下往上查，比如可以从<code>Message</code>查到<code>Chat</code>，再从<code>Chat</code>查到归属的<code>User</code>，但是实际中还有少量表的数据是没办法这样往上查的。</p>
+<p>所以这一部分逻辑，我们会在迁移的某个表的数据时候，会正向查出这个数据关联的子表数据。然后一起迁移走。</p>
+<h2 id="四、数据传输"><a href="#四、数据传输" class="headerlink" title="四、数据传输"></a>四、数据传输</h2><h3 id="4-1-业务实体"><a href="#4-1-业务实体" class="headerlink" title="4.1 业务实体"></a>4.1 业务实体</h3><p><img src="https://upload-images.jianshu.io/upload_images/12321605-5bcb732e5d40a5a5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<ul>
+<li><code>Biz Entity</code> : 业务实体类型，是一个逻辑概念，比如一个用户是一个<code>Biz Entity</code>，或者一个租户是一个<code>Biz Entity</code>，暴露给管理员的最小迁移单元。</li>
+<li><code>Locating Entity</code>: 简称<code>LE</code>，用于判断数据归属<code>Unit</code>以及数据迁移的最小单元。本身可包含子业务实体。比如一个会话、一篇文档都可以认为是一个<code>LE</code></li>
+<li><code>Sub Entity</code>: 简称<code>SE</code>，<code>Sub Enitty</code>的归属<code>Unit</code>继承于<code>Locating Entity</code>并随<code>Locating Entity</code>一起迁移。</li>
+</ul>
+<h3 id="4-2-数据传输方案"><a href="#4-2-数据传输方案" class="headerlink" title="4.2 数据传输方案"></a>4.2 数据传输方案</h3><h4 id="4-2-1-存量-停写-增量"><a href="#4-2-1-存量-停写-增量" class="headerlink" title="4.2.1 存量+停写+增量"></a>4.2.1 存量+停写+增量</h4><p><strong>一、Locating Entity迁移状态修改</strong></p>
+<p>这一步主要是标记<code>Locating Entity</code>状态为迁移中，开始对<code>Locating Entity</code>存量数据扫描，与此同时记录所有<code>Locating Entity</code>相关的增量<code>binlog</code>数据。</p>
+<p><strong>二、存量数据同步</strong></p>
+<p>在打标库中，查出<code>Locating Entity</code>所有的打标数据，然后根据<code>Schema</code>信息，去业务<code>Repo</code>中查出所有数据，生成<code>binlog</code>发送到对端。</p>
+<p><strong>三、增量数据同步</strong></p>
+<p>存量数据同步完成以后，我们再开始同步“<code>步骤一</code>”开始记录的增量数据。</p>
+<p><strong>四、实时同步状态</strong></p>
+<p>发送完增量数据的瞬间，我们需要对这个<code>Locating Entity</code>加锁，然后修改当前<code>Locating Entity</code>的状态为<code>Syncing</code>状态，后续所有的增量<code>binlog</code>可以实时发送到<code>Dst Unit</code>。</p>
+<p><strong>五、停写</strong></p>
+<p>在状态达到<code>Syncing</code>以后，且时间到了我们配置的某个“<code>时间点</code>”，我们会先判断这个<code>LE</code>能否开始停写（检查<code>binlog</code>消费是否有延迟等等），如果可以停写，则设置<code>Locating Entity</code>状态为“<code>停写</code>”。</p>
+<p>停写即是暂停对一个<code>Locating Entity</code>的所有数据的写入和修改，主要为了规避以下问题：</p>
+<ul>
+<li>防止修改<code>Locating Entity</code>的归属<code>Unit</code>时，各服务读取的<code>Locating Entity Unit</code> 有短暂的不一致，这样造成数据会写入地不一致的问题</li>
+<li>保证剩余的增量数据全部同步到目标机房。防止迁移结束后，仍后剩余数据未迁移，亦或是当业务写入数据较快，导致迁移任务无法结束</li>
+</ul>
+<p>停写可以发生在“数据层”和“业务层”。我们这里选取“业务层”停写的方案。</p>
+<p>优点：性能好，可以实现“<code>fail-fast</code>机制”，出错以后可以尽快返回，能减少无用<code>RPC</code>和数据写入请求。</p>
+<p>缺点：需要各业务方识别出所有的“写”接口并引入停写机制，比较难统一处理和维护。</p>
+<p>停写的纬度是 <code>Locating Entity</code>。业务方需要在自己服务中接入停写的<code>MiddleWare</code>，停写的 <code>MiddleWare</code>会根据<code>Locating Entity</code>的停写标记来判断是否要返回停写错误。</p>
+<p><strong>六、发送结束及标记给对端</strong></p>
+<p>设置了<code>Locating Entity</code>状态为停写以后<code>10s</code>，我们可以假设后续不会再产生<code>Locating Entity</code>的数据了，这个时候我们发送一个<code>Last Locating Entity Data</code> 给<code>Dst Unit</code>，告知对端当前的<code>Locating Entity</code>数据已经发送完成。</p>
+<p>PS： <code>Locating Entity</code>下的所有迁移数据是需要有序发送，有序消费。</p>
+<p><strong>七、Dst Unit 回写完所有数据以后 Ack</strong></p>
+<p><code>Dst Unit</code>收到了<code>Last Locating Entity Data</code>消息以后，知道这个<code>Locating Entity</code>之前的所有数据都回写到业务<code>DB</code>成功了，这个时候会回一个<code>Last Data Ack</code>给<code>Source Unit</code></p>
+<p><strong>八、修改 Locating Entity Unit 信息</strong></p>
+<p>收到<code>Last Data Ack</code> 以后表示所有数据对端都回写成功了，我们可以修改<code>Locating Entity</code>的<code>Unit</code>信息为<code>Dst Unit</code>。</p>
+<p><strong>九、关闭停写</strong></p>
+<p>等待所有服务<code>Unit</code>信息同步完成以后，然后关闭<code>Locating Entity</code>的停写标记。至此一个<code>Locating Entity</code>的迁移过程就完成了。</p>
+<p>后续所有<code>Locating Entity</code>的读写操作都会写到新的<code>Unit</code></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/12321605-5f41d0eb4ed6df22.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/12321605-9327a6583a577818.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h4 id="4-2-1-停写-全量同步"><a href="#4-2-1-停写-全量同步" class="headerlink" title="4.2.1 停写+全量同步"></a>4.2.1 停写+全量同步</h4><p>改方案相当于上面方案的精简版，主要流程就是 <code>停写</code> -&gt; <code>数据迁移</code> -&gt; <code>修改Unit</code> -&gt; <code>回复停写</code> -&gt; <code>结束</code>。</p>
+<p>PS：该方案适用于数据量不大场景，数据量大的场景，会导致停写时间过长，对用户体验不友好。</p>
+<h4 id="4-2-3-双写方案"><a href="#4-2-3-双写方案" class="headerlink" title="4.2.3 双写方案"></a>4.2.3 双写方案</h4><p>双写方案，就是 <code>存量数据迁移</code> -&gt; <code>增量数据迁移</code> -&gt; <code>实时同步 binlog 数据</code> -&gt; <code>修改Unit</code> -&gt; <code>结束</code></p>
+<p>双写的优点是，不用停写，业务对数据迁移过程无感知，存量数据同步完成以后，可以直接修改Locating Entity 的 Unit 信息，实现无缝切换。</p>
+<p>双写的缺点是，数据可能会有一致性的问题。不太适用于对数据有强一致要求的业务。</p>
+<h3 id="4-3-跨Unit数据传输通道"><a href="#4-3-跨Unit数据传输通道" class="headerlink" title="4.3 跨Unit数据传输通道"></a>4.3 跨Unit数据传输通道</h3><p>这个是用的基建提供的一个<code>Mirror</code>服务。</p>
+<p><code>Mirror</code>是一个分布式的消息同步服务，目前支持<code>kafka→kafka</code>、<code>rmq-&gt;rmq</code>之间的数据同步。<code>Mirror</code>集群部署在目标端，跨<code>region</code>消费数据后再写入同<code>region</code>相应的消息队列中。</p>
+<p>简单说，就是在<code>Source Unit</code>写入一个 <code>MQ Message</code>，<code>Mirror</code>会自动把这个数据同步到<code>Dst Unit</code>。可以在<code>Dst Unit</code>直接消费这个消息。</p>
+<h3 id="4-4-Binloger-模块"><a href="#4-4-Binloger-模块" class="headerlink" title="4.4 Binloger 模块"></a>4.4 Binloger 模块</h3><p><code>binloger</code> 模块，主要负责<code>binlog</code>生成和回写。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/12321605-4fc574f723cc4c4e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h2 id="五、架构总览"><a href="#五、架构总览" class="headerlink" title="五、架构总览"></a>五、架构总览</h2><p><img src="https://upload-images.jianshu.io/upload_images/12321605-d61d2a70c79726c8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h2 id="六、数据迁移中踩的坑"><a href="#六、数据迁移中踩的坑" class="headerlink" title="六、数据迁移中踩的坑"></a>六、数据迁移中踩的坑</h2><h3 id="6-1-MySQL-数据迁移时区问题"><a href="#6-1-MySQL-数据迁移时区问题" class="headerlink" title="6.1 MySQL 数据迁移时区问题"></a>6.1 MySQL 数据迁移时区问题</h3><p>因为国内和国外时区不一样，<code>MySQL</code>库里面时间都是字符串格式存储，所以传输过程中可能有些问题，详见 <a target="_blank" rel="noopener" href="https://fanlv.wiki/2021/11/28/mysql-time/">MySQL DateTime和Timestamp时区问题</a>。</p>
+<h3 id="6-2-PK-Duplicate-Error-问题"><a href="#6-2-PK-Duplicate-Error-问题" class="headerlink" title="6.2 PK Duplicate Error 问题"></a>6.2 PK Duplicate Error 问题</h3><p>本质问题，是业务方写入数据的时候<code>ID</code>用的自增<code>ID</code>（或者自己<code>Local</code>方式生成的<code>ID</code>），<code>DTS</code>这边用的<code>ID</code>是一个中心发号器生成的<code>ID</code>。两个<code>ID</code>有一定的冲突概率（概率比我们想象中的要大）。<br>详见 <a target="_blank" rel="noopener" href="https://fanlv.wiki/2022/05/25/mysql-insert-auto-incre/">MySQL 自增列 Duplicate Error 问题分析</a>。</p>
+<h3 id="6-3-INSERT-…-ON-DUPLICATE"><a href="#6-3-INSERT-…-ON-DUPLICATE" class="headerlink" title="6.3 INSERT … ON DUPLICATE"></a>6.3 INSERT … ON DUPLICATE</h3><p>这个问题，其实根因就是上面<code>6.2</code>的问题，业务方的生成的<code>ID</code>和<code>DTS</code>生成的<code>ID</code>冲突了。</p>
+<p>然后我们这边最早插入的时候是用<code>INSERT ... ON DUPLICATE</code>，结果由于<code>ID</code>冲突（其实是两个条毫不相干的数据，只是因为<code>ID</code>生成方式没有保持一致，导致<code>PK Duplicate</code>），然后就走了<code>Update</code>逻辑，把业务方的其他数据给写脏了（血的教训）。</p>
+<p>优化后的逻辑：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/12321605-981cff5c230fd95c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h3 id="6-4-唯一索引列有-Null-值"><a href="#6-4-唯一索引列有-Null-值" class="headerlink" title="6.4 唯一索引列有 Null 值"></a>6.4 唯一索引列有 Null 值</h3><p>我们正常打标流程，是记录数据的唯一索引，但是业务方有些表的唯一索引的列可能为空，这样就退化为普通索引，导致我们数据迁移的时候会有放大读和放大写。</p>
+<p>假设表数据如下，<code>(a,b)</code>是唯一索引</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>a</th>
+<th>b</th>
+<th>c</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>1</td>
+<td>NULL</td>
+<td>————-</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1</td>
+<td>NULL</td>
+<td>————-</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1</td>
+<td>NULL</td>
+<td>————-</td>
+</tr>
+<tr>
+<td>4</td>
+<td>1</td>
+<td>NULL</td>
+<td>————-</td>
+</tr>
+<tr>
+<td>5</td>
+<td>1</td>
+<td>NULL</td>
+<td>————-</td>
+</tr>
+</tbody></table>
+<p>我们这边对这<code>5</code>条数据，<code>DTS</code>会打<code>5</code>个标，打标的数据如下<code>table=xx， idx_data = 1,NULL</code>, 这样我们用<code>5</code>条打标数据会查出<code>25</code>条数据（因为一个打标数据可以查出<code>5</code>条）。发送到对端以后，对端会直接写入<code>25</code>条数据，这个数据重复很多的时候，会导致放大的很厉害，对<code>DB</code>读写性能有一定影响。</p>
+<p>优化方式，我们迁移过程中会用<code>table+idx_data</code>做个去重。保证相同的打标数据只会查出一次。</p>
+<h2 id="七、名词解释"><a href="#七、名词解释" class="headerlink" title="七、名词解释"></a>七、名词解释</h2><ul>
+<li><code>Unit</code>：一个功能自封闭的部署单元，可以为用户提供完整的产品功能。<code>Unit</code>之间的数据存储是隔离的。一个<code>Unit</code>可以包含多个<code>IDC</code>。在本文上下文中可以假设有<code>CN</code>和<code>i18n</code>（国际化）两个<code>Unit</code>。</li>
+<li><code>Tenant</code>：租户，可以认为一个公司就是一个租户。</li>
+<li><code>Global Meta</code>：记录所有实体（<code>Entity</code>）归属的一个服务吗，还会记录实体一些其他<code>Meta</code>信息，比如<code>是否处于停写状态</code>。</li>
+<li><code>EdgeProxy</code> ：边缘代理，负责转发<code>Unit</code>之间的请求。</li>
+<li><code>Binlog</code>：描述数据实体内容的数据结构，当前上下文中就是指的一个<code>PB</code>的<code>Struct</code>。</li>
+</ul>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/2022/03/08/raft-introduction/" title="《Raft-分布式共识算法》"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: 《Raft-分布式共识算法》</span></a><a class="button is-default" href="/2021/12/18/golang-complier-optimize/" title="Golang 编译器优化那些事"><span class="has-text-weight-semibold">下一页: Golang 编译器优化那些事</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="fanlv/blog" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/fanlv"><i class="iconfont icon-github"></i></a><!-- Ins--><a title="instagram" target="_blank" rel="noopener nofollow" href="//www.instagram.com/fanlvlgh"><i class="iconfont icon-ins"></i></a><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> Ryo 2022</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span>博学之，审问之，慎思之，明辨之，笃行之</span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script></body></html>
